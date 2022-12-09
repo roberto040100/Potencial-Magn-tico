@@ -1,6 +1,7 @@
 import numpy as np
 import math
 from numpy import linalg as la
+from numba import njit
 
 def Hr_3D(j,mi_0,imas,dom):  # Campo H na direção X para 1 ímã
   CTE = j/(4*np.pi*mi_0)
@@ -385,7 +386,7 @@ def solvewithLU(L, U, b):
 
     return x
 
-def gauss_seidel(A: np.ndarray, b: np.ndarray, tol=1e-10, max_iter=1e4):
+def gauss_seidel(A: np.ndarray, b: np.ndarray, tol=1e-3, max_iter=1e4):
     
     """Gauss Seidel Method for solving linear systems of equations.
 
@@ -417,6 +418,11 @@ def gauss_seidel(A: np.ndarray, b: np.ndarray, tol=1e-10, max_iter=1e4):
     R = np.zeros(N, float)
     
     iteration = 0
+    x, R = gauss_seidel_main_loo(A, b, x, R, N, tol, max_iter)
+    return([x, R])
+
+@njit(fastmath=True)
+def gauss_seidel_main_loo(A, b, x, R,  N, tol=1e-3, max_iter=1e4, iteration=0):
     while True and iteration < max_iter:
         for i in range(N):
             sumation = 0.
@@ -428,15 +434,12 @@ def gauss_seidel(A: np.ndarray, b: np.ndarray, tol=1e-10, max_iter=1e4):
                 
             x[i] += R[i]
         
-        #print(np.max(np.abs(R)))
-        print(np.max(np.abs(R)))
+        print(np.max(np.abs(R)), iteration)
         if np.max(np.abs(R)) < tol:
           break
             
         iteration += 1
-    
     return([x, R])
-
 
 
 
