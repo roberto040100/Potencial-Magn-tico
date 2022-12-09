@@ -3,6 +3,7 @@ from func import xi_1d
 from func import gauss_seidel
 import matplotlib.pyplot as plt
 import numpy as np
+from alive_progress import alive_bar
 
 # Definindo o número de nós
 n_z = 200
@@ -65,11 +66,9 @@ for i in range(n_z):
     A[i][i-1] = - 1
     B[i]= H2*(delta_z)
 
-
-X2 = gauss_seidel(A,B,1e-10,1e6)
+X2 = gauss_seidel(A,B,1e-6,1e6)
 
 r = np.allclose(np.dot(A, X2[0]), B)
-print(r)
 
 
 H = np.zeros(n_z)
@@ -82,7 +81,8 @@ for k in range(n_z):
 
     H[k]= (X2[0][k+1]-X2[0][k-1])/(2*delta_z)
 
-
-plt.plot(z,X2[0])
-plt.title("Susceptibilidade")
-plt.show()
+fig = plt.figure('sucetibilidade', [10,10])
+ax = plt.axes()
+ax.plot(z,X2[0])
+ax.set_title("Susceptibilidade")
+plt.savefig('sucetibilidade.png')
